@@ -1,0 +1,35 @@
+{% import urlparse %}
+{% set query = urlparse.urlparse(handler.request.uri).query %}
+{% set dict_query = dict([(k,v[0]) for k,v in urlparse.parse_qs(query).items()]) %}
+{% set params = '' %}
+
+{% for k,v in dict_query.items() %}
+    {% if k not in ['page','page_size'] %}
+        {% set params += k+'='+v +'&' %}
+    {% end  %}
+{% end %}
+
+<br><br><br><br><br>
+<div class="row tecontent-row-paginationxt-center">
+    <div class="col-md-offset-8">
+        <ul class="pagination">
+
+            <li class="{{'disabled' if page == 1 else '' }}">
+                <a href="?{{ params }}page={{ 1 if page-1 <= 0 else page-1 }}&page_size={{ page_size }}"
+                   aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% for i in range(page_count) %}
+            <li class="{{ 'active' if i+1 == page else ''}}"><a
+                    href="?{{ params }}page={{ i+1 }}&page_size={{ page_size }}">{{ i+1 }}</a></li>
+            {% end %}
+            <li class="{{'disabled' if page == page_count else '' }}">
+                <a href="?{{ params }}page={{ page_count if page+1 >= page_count else page+1 }}&page_size={{ page_size }}"
+                   aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

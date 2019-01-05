@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>北京爱度公益基金会 管理后台</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- site css -->
+    <link rel="stylesheet" href="{{ static_url('bootflat/css/site.min.css') }}">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,800,700,400italic,600italic,700italic,800italic,300italic"
+          rel="stylesheet" type="text/css">
+    <!-- <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'> -->
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+    <script src="{{ static_url('bootflat/js/html5shiv.js') }}"></script>
+    <script src="{{ static_url('bootflat/js/respond.min.js') }}"></script>
+    <![endif]-->
+    <script type="text/javascript" src="{{ static_url('bootflat/js/site.min.js') }}"></script>
+    <style>
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #303641;
+            color: #C1C3C6
+        }
+    </style>
+</head>
+<body>
+<div class="container" style="padding: 150px 0">
+    <form class="form-signin">
+        <h3 class="form-signin-heading">登 陆</h3>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class="glyphicon glyphicon-user"></i>
+                </div>
+                <input type="text" class="form-control" id="username" placeholder="用 户 名"
+                       autocomplete="off"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class=" glyphicon glyphicon-lock "></i>
+                </div>
+                <input type="password" class="form-control" id="password" placeholder="密 码"
+                       autocomplete="off"/>
+            </div>
+        </div>
+
+        <a href="javascript:void(0)" class="btn btn-lg btn-primary btn-block" onclick="login()">登 陆</a>
+    </form>
+
+</div>
+<div class="clearfix"></div>
+<br><br>
+<!--footer-->
+<div class="site-footer login-footer">
+    <div class="container">
+        <div class="copyright clearfix text-center">
+            <p>
+                <a href="http://www.miibeian.gov.cn/" target="_blank">@2018 北京爱度公益基金会 藏ICP备17000129号-1号</a>
+                <a href="javascript:void(0)">TEL:010-58792288
+                    FAX:010-58795188</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+{% block require_js %}
+
+<script type="text/javascript">
+    var lock = false;
+
+    function login() {
+        var username = $('#username').val();
+        var password = $('#password').val();
+
+
+        if (username.length == 0) {
+            alert('请填写用户名');
+            return;
+        }
+        if (password.length == 0) {
+            alert('请填写密码');
+            return;
+        }
+
+
+        if (lock)
+            return;
+        else
+            lock = true;
+        //encodeURIComponent
+        $.post("/admin/login", {
+            username: username,
+            password: password
+        }, function (data) {
+            var obj = eval('(' + data + ')');
+            console.log(obj)
+            if (obj.data == true) {
+                window.location.href = '/admin'
+            }
+            else {
+                alert('登录失败')
+            }
+
+            lock = false;
+        });
+    }
+
+</script>
+{% end %}
+</body>
+</html>

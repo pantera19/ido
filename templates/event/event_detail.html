@@ -1,0 +1,260 @@
+{% extends "../base.html" %}
+
+
+{% block css %}
+<link rel="stylesheet" href="{{ static_url('bootfileinput/css/fileinput.min.css') }}">
+<link rel="stylesheet" href="{{ static_url('summernote/summernote.css') }}">
+{% end %}
+
+
+{% block js %}
+<script src="{{ static_url('bootfileinput/js/fileinput.min.js') }}"></script>
+<script src="{{ static_url('bootfileinput/js/locales/zh.js') }}"></script>
+
+<script src="{{ static_url('summernote/summernote.min.js') }}"></script>
+<script src="{{ static_url('summernote/lang/summernote-zh-CN.js') }}"></script>
+
+{% end %}
+
+
+{% block title %}
+编辑活动
+{% end %}
+
+{% block content %}
+
+
+<form novalidate="" role="form" class="form-horizontal">
+    <div class="form-group">
+        <label class="col-md-2 control-label">名称</label>
+        <div class="col-md-10">
+            <input type="text" placeholder="名称" class="form-control" id="name"
+                   value="{{ event['name'] if event else '' }}">
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="hidden" id="cover" value="">
+        <label class="col-md-2 control-label">封面图</label>
+        <div class="col-md-10">
+            <div class="row" style="height: 360px;padding-left: 15px;padding-right: 15px">
+                <input id="file-Portrait1" type="file" multiple>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">详情</label>
+        <div class="col-md-10">
+            <div class="summernote" name="summary" id="summary" placeholder="项目描述" action="/admin/upload">
+                {% raw event['summary'] if event else '' %}
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <a href="javascript:void(0)" class="btn btn-info btn-xs" onclick="backpg()">返回</a>
+            <a href="javascript:void(0)" class="btn btn-danger btn-xs" onclick="edit()">提交</a>
+        </div>
+    </div>
+</form>
+
+
+{% end %}
+
+{% block require_js %}
+
+<script type="text/javascript">
+    $(function () {
+        $('#cover').val("{{ event['cover'] if event else '' }}");
+
+        var covers = "{{ event['cover'] if event else '' }}".split(',')
+        var cover_list = []
+        var cover_configs = []
+        for (var i = 0; i < covers.length; i++) {
+            if (covers[i] != '') {
+                cover_list.push("<img src='http://" + location.host + '/static' + covers[i] + "' class='file-preview-image kv-preview-data' style='width:auto;height:auto;max-width:100%;max-height:100%;'>");
+                cover_configs.push({
+                    type: "image",
+                    downloadUrl: covers[i],
+                    key: 'init_' + i
+                },)
+            }
+
+        }
+        initFileInput("file-Portrait1", "/admin/upload", cover_list, cover_configs);
+
+
+        var $summernote = $('#summary').summernote({
+            lang: 'zh-CN',
+            placeholder: '请填写详情',
+            minHeight: 300,
+            dialogsFade: true,// Add fade effect on dialogs
+            dialogsInBody: true,// Dialogs can be placed in body, not in
+            // summernote.
+            disableDragAndDrop: false,// default false You can disable drag
+            // and drop
+            callbacks: {
+                onImageUpload: function (files) {
+                    sendFile($summernote, files[0]);
+                }
+            },
+            toolbar: [
+
+                // [groupName, [list of button]]
+
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+
+                // ['font', ['strikethrough', 'superscript', 'subscript']],
+
+                ['fontsize', ['fontsize']],
+
+                ['color', ['color']],
+
+                //['para', ['ul', 'ol', 'paragraph']],
+
+                ['height', ['height']],
+
+                ['Insert', ['picture', 'link']],
+
+            ],
+        });
+
+        //ajax上传图片
+        function sendFile($summernote, file) {
+            var formData = new FormData();
+            formData.append("file", file);
+
+            $.ajax({
+                url: "/admin/upload",//路径是你控制器中上传图片的方法，下面controller里面我会写到
+                data: formData,
+                type: 'POST',
+                cache: false,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                success: function (data) {
+                    let imgNode = document.createElement("img");
+                    imgNode.src = 'http://' + location.host + '/static' + data.data;
+                    $summernote.summernote('insertNode', imgNode);
+                }
+            });
+        }
+    })
+
+
+    function initFileInput(ctrlName, uploadUrl, covers, cover_configs) {
+        var List = new Array();
+
+
+        for (var i = 0; i < cover_configs.length; i++) {
+            List.push({FileName: cover_configs[i].downloadUrl, KeyID: cover_configs[i].key})
+        }
+        var control = $('#' + ctrlName);
+        control.fileinput({
+            language: 'zh', //设置语言
+            uploadUrl: uploadUrl, //上传的地址
+            deleteUrl: "/admin/img/del",
+            allowedFileExtensions: ['jpg', 'png', 'jpeg'],//接收的文件后缀
+            showUpload: false, //是否显示上传按钮
+            showPreview: true,
+
+            showClose: false,
+            showRemove: false,
+            showCancel: false,
+            showUploadedThumbs: false,
+            overwriteInitial: false,
+            showCaption: false,
+            browseClass: "btn btn-primary", //按钮样式
+            previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
+            maxFileSize: 500,
+            maxFileCount: 3, //表示允许同时上传的最大文件个数
+            validateInitialCount: true,
+            initialPreviewFileType: 'image',
+            initialPreview: covers,
+            initialPreviewConfig: cover_configs
+        }).on("fileuploaded", function (event, data, previewId, index) {
+            var data = data.response.data;  //文件上传成功返回的文件名，可返回自定义文件名
+            List.push({FileName: data, KeyID: previewId})
+            setCover(List)
+
+        }).on("filesuccessremove", function (event, key) {
+            for (var i = 0; i < List.length; i++) {
+                if (typeof List[i] != 'undefined' && List[i].KeyID == key) {
+                    delete List[i];
+                }
+            }
+            setCover(List)
+        }).on("filepredelete", function (event, key) {
+            for (var i = 0; i < List.length; i++) {
+                if (typeof List[i] != 'undefined' && List[i].KeyID == key) {
+                    delete List[i];
+                }
+            }
+            setCover(List)
+        }).on("filecleared", function () {
+            for (var i = 0; i < List.length; i++) {
+                if (typeof List[i] != 'undefined') {
+                    delete List[i];
+                }
+            }
+            setCover(List)
+        });
+    }
+
+    function setCover(Li) {
+        var NLi = new Array();
+        for (var i = 0; i < Li.length; i++) {
+            if (typeof Li[i] != 'undefined') {
+                NLi.push(Li[i].FileName)
+            }
+        }
+        $('#cover').val(NLi.join(','));
+        console.log($("#cover").val());
+    }
+
+    var lock = false;
+
+    function edit() {
+        if (!confirm("确定执行?"))
+            return true;
+
+        var id = '{{ event["id"] if event else "" }}';
+        var name = $('#name').val();
+        var cover = $('#cover').val();
+        var summary = $('#summary').summernote('code');
+
+
+        if (name.length == 0) {
+            alert('请填写名称');
+            return;
+        }
+
+        if (cover == '') {
+            alert('请上传封面图');
+            return;
+        }
+
+        if (lock)
+            return;
+        else
+            lock = true;
+        //encodeURIComponent
+        $.post("/admin/event", {
+            id: id,
+            name: name,
+            cover: cover,
+            summary: summary,
+        }, function (data) {
+            var obj = eval('(' + data + ')');
+            if (obj.data == true) {
+                backpg();
+            }
+            else {
+                alert('失败')
+            }
+
+            lock = false;
+        });
+    }
+
+</script>
+{% end %}

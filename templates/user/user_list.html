@@ -1,0 +1,92 @@
+{% extends "../base.html" %}
+
+
+{% block css %}
+
+{% end %}
+
+
+{% block js %}
+{% end %}
+
+
+{% block title %}
+用户管理
+{% end %}
+
+{% block content %}
+
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>昵称</th>
+            <th>性别</th>
+            <th>头像</th>
+            <th>城市</th>
+            <th>注册日期</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+        {% set id = user['id'] %}
+        <tr class="{{ ['danger',''][user['status']] }}">
+            <td>{{ id }}</td>
+            <td>{{ user['nickname'] }}</td>
+            <td>{{ ['未知','男','女'][user['sex']] }}</td>
+            <td></td>
+            <td>{{ user['province'] }}/{{ user['country'] }}/{{ user['city'] }}</td>
+            <td>{{ user['reg_time'] }}</td>
+            <td>{{ ['封禁','正常'][user['status']] }}</td>
+            <td>
+                {% if user['status'] == 0 %}
+                    <a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick='del("{{ id }}",1)'>恢复</a>
+                {% else %}
+                    <a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick='del("{{ id }}",0)'>封禁</a>
+                {% end %}
+            </td>
+        </tr>
+        {% end %}
+        </tbody>
+    </table>
+</div>
+
+{% if users and page_count > 1 %}
+    {% module Template("widget/page.html",page=page,page_size=page_size,page_count=page_count) %}
+{% end %}
+
+{% end %}
+
+{% block require_js %}
+
+<script type="text/javascript">
+    var lock = false;
+
+    function del(id,status) {
+        if (lock)
+            return;
+        else
+            lock = true;
+        $.post("/admin/users", {
+            id: id,
+            status: status
+        }, function (data) {
+            var obj = eval('(' + data + ')');
+            console.log(obj)
+            if (obj.data == true) {
+                window.location.reload()
+            }
+            else {
+                alert('失败')
+            }
+
+            lock = false;
+        });
+    }
+
+</script>
+{% end %}

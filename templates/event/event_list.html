@@ -1,0 +1,87 @@
+{% extends "../base.html" %}
+
+
+{% block css %}
+
+{% end %}
+
+
+{% block js %}
+{% end %}
+
+
+{% block title %}
+活动管理
+{% end %}
+
+{% block content %}
+<a href="/admin/event" type="button" class="btn btn-danger btn-xs">新增</a>
+
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>名称</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for event in events %}
+        {% set id = event['id'] %}
+        <tr class="{{ ['danger',''][event['status']] }}">
+            <td>{{ id }}</td>
+            <td>{{ event['name'] }}</td>
+            <td>{{ ['删除','正常'][event['status']] }}</td>
+            <td>
+                <a class="btn btn-info btn-xs" href="/admin/event?id={{ event['id'] }}">基本信息</a>
+                <a class="btn btn-primary btn-xs" href="/admin/event/options?event_id={{ event['id'] }}">项设置</a>
+                {% if event['status'] == 0 %}
+                    <a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick='del("{{ id }}",1)'>恢复</a>
+                {% else %}
+                    <a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick='del("{{ id }}",0)'>删除</a>
+                {% end %}
+            </td>
+        </tr>
+        {% end %}
+        </tbody>
+    </table>
+</div>
+
+{% if events and page_count > 1 %}
+    {% module Template("widget/page.html",page=page,page_size=page_size,page_count=page_count) %}
+{% end %}
+
+{% end %}
+
+{% block require_js %}
+
+<script type="text/javascript">
+    var lock = false;
+
+    function del(id,status) {
+        if (lock)
+            return;
+        else
+            lock = true;
+        $.post("/admin/events", {
+            id: id,
+            status: status
+        }, function (data) {
+            var obj = eval('(' + data + ')');
+            console.log(obj)
+            if (obj.data == true) {
+                window.location.reload()
+            }
+            else {
+                alert('失败')
+            }
+
+            lock = false;
+        });
+    }
+
+</script>
+{% end %}
