@@ -14,12 +14,15 @@ import requests
 import hashlib
 import urllib3
 
+import config
+from data.redisdb import redis_db
+
 urllib3.disable_warnings()
 
 
-class wx(object):
+class wechat(object):
 
-    def __init__(self, app_id, app_secret, mch_id, mch_key, redis_db):
+    def __init__(self, app_id, app_secret, mch_id, mch_key):
         self.app_id = app_id
         self.app_secret = app_secret
         self.mch_id = mch_id
@@ -36,8 +39,8 @@ class wx(object):
         req_result = requests.get('https://api.weixin.qq.com/sns/jscode2session',
                                   params=req_params, timeout=3, verify=False)
 
-        html = req_result.json()
-        return html
+        ret = req_result.json()
+        return ret
 
     def get_wx_access_token(self, app_id, app_secret, key='wx:access_token'):
 
@@ -194,3 +197,6 @@ class wx(object):
             msg = xmlresp['xml']['return_msg']
             logging.error(msg)
             return dict(code=0, msg=msg)
+
+
+wx = wechat(**config.minip)

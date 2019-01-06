@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from base_handler import base_handler
-from app.business.user import user_bll
+from app.business.add import user_bll
 
 from util.wechat import wx
 from util.token import token_manager

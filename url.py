@@ -30,11 +30,11 @@ urls = [
     [r'/admin/upload', img_upload],
     [r'/admin/img/del', img_delete],
 ]
-#
-# from app.api.user import user_handler as user
-#
-# api_url = [
-#     [r"/api/user/(.*)", user, ]
-# ]
-#
-# urls.extend(api_url)
+
+from app.api.user import user_handler as user
+
+api_url = [
+    [r"/api/user/(.*)", user]
+]
+
+urls.extend(api_url)
