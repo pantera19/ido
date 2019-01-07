@@ -11,6 +11,20 @@ class event_option_bll(BaseAccess):
         BaseAccess.__init__(self, _table)
         self.gift = gift_bll()
 
+    def get_all_di(self):
+        conditions = dict(status=1)
+        order = dict(price='asc')
+
+        rows = self._list(['*'], conditions, order=order)
+
+        gift_di = self.gift.get_all_di()
+        di = dict()
+        for row in rows:
+            row['gift'] = gift_di.get(row['gift_id'], {})
+            di.setdefault(row['event_id'], []).append(row)
+
+        return di
+
     def add(self, event_id, price, gift_id, status=1):
         params = locals()
         params.pop('self')

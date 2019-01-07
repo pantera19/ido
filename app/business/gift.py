@@ -9,6 +9,14 @@ class gift_bll(BaseAccess):
     def __init__(self):
         BaseAccess.__init__(self, _table)
 
+    def get_all_di(self):
+        conditions = dict(status=1)
+        order = dict(id='asc')
+
+        rows = self._list(['*'], conditions, order=order)
+        di = {row['id']: row for row in rows}
+        return di
+
     def add(self, name):
         params = locals()
         params.pop('self')

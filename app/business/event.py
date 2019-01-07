@@ -1,6 +1,7 @@
 # -*- coding:utf8 -*-
 
 from bass_access import BaseAccess
+from app.business.event_option import event_option_bll
 
 _table = 'ido.event'
 
@@ -8,6 +9,24 @@ _table = 'ido.event'
 class event_bll(BaseAccess):
     def __init__(self):
         BaseAccess.__init__(self, _table)
+        self.event_option = event_option_bll()
+
+    ''' api '''
+
+    def get_all(self):
+        conditions = dict(status=1)
+        order = dict(id='desc')
+
+        rows = self._list(['*'], conditions=conditions, order=order)
+        options = self.event_option.get_all_di()
+
+        for row in rows:
+            row['options'] = options.get(row['id'], [])
+            row['cover'] = row['cover'].split(',')
+
+        return rows
+
+    ''' admin '''
 
     def add(self, name, cover, summary):
         params = locals()
