@@ -33,10 +33,12 @@ urls = [
 
 from app.api.user import user_handler as user
 from app.api.event import event_handler as event
+from app.api.address import address_handler as address
 
 api_url = [
     [r"/api/user/(.*)", user],
-    [r"/api/event/(.*)", event]
+    [r"/api/event/(.*)", event],
+    [r"/api/address/(.*)", address]
 ]
 
 urls.extend(api_url)

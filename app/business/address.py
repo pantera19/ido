@@ -9,6 +9,10 @@ class address_bll(BaseAccess):
     def __init__(self):
         BaseAccess.__init__(self, _table)
 
+    ''' api '''
+
+    ''' admin '''
+
     def add(self, name, phone, country, country_id, province, province_id, city, city_id, street, is_default):
         params = locals()
         params.pop('self')
