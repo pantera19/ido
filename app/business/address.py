@@ -11,9 +11,17 @@ class address_bll(BaseAccess):
 
     ''' api '''
 
+    def get_list_by_user_id(self, user_id):
+        conditions = dict(status=1, user_id=user_id)
+        order = dict(id='asc')
+
+        rows = self._list(['*'], conditions, order=order)
+
+        return rows
+
     ''' admin '''
 
-    def add(self, name, phone, country, country_id, province, province_id, city, city_id, street, is_default):
+    def add(self, user_id, name, phone, country, province, city, street, is_default=0):
         params = locals()
         params.pop('self')
 
@@ -21,7 +29,7 @@ class address_bll(BaseAccess):
 
         return flag, id
 
-    def update(self, id, name, phone, country, country_id, province, province_id, city, city_id, street, is_default):
+    def update(self, id, name, phone, country, province, city, street, is_default=0):
         params = locals()
         params.pop('self')
         params.pop('id')

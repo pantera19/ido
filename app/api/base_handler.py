@@ -33,10 +33,10 @@ class base_handler(RequestHandler):
 
     def post(self, method, **kwargs):
         user = self.current_user
-        self.uid = ''
+        self.user_id = ''
         if user:
-            self.uid = user['id']
-            self.uname = user['name']
+            self.user_id = user['id']
+            self.user_name = user['nickname']
             self.user = user
 
         try:
