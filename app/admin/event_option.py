@@ -55,12 +55,13 @@ class event_option_detail(BaseHandler):
         id = self.get_argument('id', '')
 
         price = self.get_argument('price', '')
+        notice = self.get_argument('notice', '')
         event_id = self.get_argument('event_id', '')
         gift_id = self.get_argument('gift_id', '')
 
         if id:
-            ret, id = self.event_option.update(id, event_id, price, gift_id)
+            ret, id = self.event_option.update(id, event_id, price, notice, gift_id)
         else:
-            ret, id = self.event_option.add(event_id, price, gift_id)
+            ret, id = self.event_option.add(event_id, price, notice, gift_id)
 
         self.write_json(ret)

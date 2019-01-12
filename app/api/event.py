@@ -10,6 +10,17 @@ class event_handler(base_handler):
         base_handler.__init__(self, application, request, *kwargs)
         self.event = event_bll()
 
+    @base_handler.decorator_arguments(
+        id=[None, int, True],
+    )
+    def info(self, **args):
+        '''
+            获取单个活动信息
+        '''
+
+        event = self.event.get_detail(args['id'])
+        return self.write_json(event)
+
     def list(self):
         '''
             注册 & 登录

@@ -25,7 +25,7 @@ class event_option_bll(BaseAccess):
 
         return di
 
-    def add(self, event_id, price, gift_id, status=1):
+    def add(self, event_id, price, notice, gift_id, status=1):
         params = locals()
         params.pop('self')
 
@@ -33,7 +33,7 @@ class event_option_bll(BaseAccess):
 
         return flag, id
 
-    def update(self, id, event_id, price, gift_id):
+    def update(self, id, event_id, price, notice, gift_id):
         params = locals()
         params.pop('self')
         params.pop('id')

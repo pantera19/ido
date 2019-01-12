@@ -14,7 +14,6 @@ class address_handler(base_handler):
 
     @base_handler.author
     @base_handler.decorator_arguments(
-        id=[0, int, True],
         name=['', str, True],
         phone=['', str, True],
         country=['', str, True],
@@ -26,36 +25,27 @@ class address_handler(base_handler):
         '''
             新增 & 修改 地址信息
         '''
-        args['user_id'] = self.user_id
-        if args['id'] == 0:
-            args.pop('id')
-            flag, id = self.address.add(**args)
-        else:
+
+        address = self.address.get_detail_by_user_id(self.user_id)
+
+        if address:
+            args['id'] = address['id']
             flag = self.address.update(**args)
+        else:
+            args['user_id'] = self.user_id
+            flag, id = self.address.add(**args)
 
         return self.write_json(flag)
 
     @base_handler.author
-    @base_handler.decorator_arguments(id=[0, int, True])
-    def info(self, **args):
+    def info(self):
         '''
             根据id 获取用户地址
         '''
-        address = self.address.get_detail(args['id'])
+        address = self.address.get_detail_by_user_id(self.user_id)
 
         if address:
-            if address['user_id'] == self.user_id:
-                return self.write_json(address)
-            else:
-                return self.write_json(errors.error_not_allowed)
+
+            return self.write_json(address)
         else:
             return self.write_json(None)
-
-    @base_handler.author
-    def list(self):
-        '''
-            获取用户 地址列表
-        '''
-        address = self.address.get_list_by_user_id(self.user_id)
-
-        return self.write_json(address)

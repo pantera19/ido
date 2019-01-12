@@ -11,11 +11,10 @@ class address_bll(BaseAccess):
 
     ''' api '''
 
-    def get_list_by_user_id(self, user_id):
+    def get_detail_by_user_id(self, user_id):
         conditions = dict(status=1, user_id=user_id)
-        order = dict(id='asc')
 
-        rows = self._list(['*'], conditions, order=order)
+        rows = self._get(['*'], conditions)
 
         return rows
 
