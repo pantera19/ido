@@ -20,7 +20,7 @@ class address_bll(BaseAccess):
 
     ''' admin '''
 
-    def add(self, user_id, name, phone, country, province, city, street, is_default=0):
+    def add(self, user_id, name, sex, phone, country, province, city, street, is_default=0):
         params = locals()
         params.pop('self')
 
@@ -28,7 +28,7 @@ class address_bll(BaseAccess):
 
         return flag, id
 
-    def update(self, id, name, phone, country, province, city, street, is_default=0):
+    def update(self, id, name, sex, phone, country, province, city, street, is_default=0):
         params = locals()
         params.pop('self')
         params.pop('id')

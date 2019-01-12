@@ -15,6 +15,7 @@ class address_handler(base_handler):
     @base_handler.author
     @base_handler.decorator_arguments(
         name=['', str, True],
+        sex=[0, int, True],
         phone=['', str, True],
         country=['', str, True],
         province=['', str, True],

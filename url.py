@@ -6,6 +6,7 @@ from app.admin.gift import gift_list, gift_detail
 from app.admin.event import event_list, event_detail
 from app.admin.event_option import event_option_list, event_option_detail
 from app.admin.user import user_list
+from app.admin.agreement import agreement_detail
 
 from app.admin.img import img_upload, img_delete
 
@@ -26,6 +27,8 @@ urls = [
     [r'/admin/event/options', event_option_list],
     [r'/admin/event/option', event_option_detail],
 
+    [r'/admin/agreement', agreement_detail],
+
     [r'/admin/users', user_list],
     [r'/admin/upload', img_upload],
     [r'/admin/img/del', img_delete],
@@ -34,11 +37,13 @@ urls = [
 from app.api.user import user_handler as user
 from app.api.event import event_handler as event
 from app.api.address import address_handler as address
+from app.api.agreement import agreement_handler as agreement
 
 api_url = [
     [r"/api/user/(.*)", user],
     [r"/api/event/(.*)", event],
-    [r"/api/address/(.*)", address]
+    [r"/api/address/(.*)", address],
+    [r"/api/agreement/(.*)", agreement]
 ]
 
 urls.extend(api_url)

@@ -27,6 +27,7 @@
             <th>ID</th>
             <th>金额</th>
             <th>实物</th>
+            <th>提示</th>
             <th>状态</th>
             <th>操作</th>
         </tr>
@@ -38,6 +39,7 @@
             <td>{{ id }}</td>
             <td>{{ event_option['price'] }}</td>
             <td>{{ event_option['gift']['name'] if event_option['gift'] else '-' }}</td>
+            <td>{{ event_option['notice'] }}</td>
             <td>{{ ['删除','正常'][event_option['status']] }}</td>
             <td>
                 <a class="btn btn-primary btn-xs" href="/admin/event/option?id={{ event_option['id'] }}&event_id={{ event_option['event_id'] }}">设置</a>
