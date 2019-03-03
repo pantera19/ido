@@ -3,6 +3,7 @@
 
 from base_handler import base_handler
 from app.business.user import user_bll
+from app.business.donation_record import donation_record_bll
 
 from util.wechat import wx
 from util.token import token_manager
@@ -12,6 +13,7 @@ class user_handler(base_handler):
     def __init__(self, application, request, **kwargs):
         base_handler.__init__(self, application, request, *kwargs)
         self.ub = user_bll()
+        self.donation_record_b = donation_record_bll()
 
     @base_handler.decorator_arguments(
         code=[None, str, True],
@@ -48,3 +50,8 @@ class user_handler(base_handler):
         user.pop('union_id')
 
         return self.write_json(user)
+
+    @base_handler.author
+    def get_amount(self):
+        amount, times = self.donation_record_b.get_amount_by_user_id(self.user_id)
+        return self.write_json({'amount': amount, 'times': times})

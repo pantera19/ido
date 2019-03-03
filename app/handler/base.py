@@ -64,7 +64,7 @@ class BaseHandler(RequestHandler):
 
     def get_page(self):
         page = int(self.get_argument('page', '1'))
-        page_size = int(self.get_argument('page_size', '20'))
+        page_size = int(self.get_argument('page_size', '10'))
 
         return page, page_size
 

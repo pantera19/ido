@@ -37,6 +37,7 @@
             <td>{{ ['删除','正常'][event['status']] }}</td>
             <td>
                 <a class="btn btn-info btn-xs" href="/admin/event?id={{ event['id'] }}">基本信息</a>
+                <a class="btn btn-success btn-xs" href="/admin/donation_records?event_id={{ event['id'] }}">捐赠记录</a>
                 <a class="btn btn-primary btn-xs" href="/admin/event/options?event_id={{ event['id'] }}">项设置</a>
                 {% if event['status'] == 0 %}
                     <a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick='del("{{ id }}",1)'>恢复</a>

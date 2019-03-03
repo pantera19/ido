@@ -1,0 +1,74 @@
+{% extends "../base.html" %}
+
+
+{% block css %}
+
+{% end %}
+
+
+{% block js %}
+{% end %}
+
+
+{% block title %}
+捐赠记录
+{% end %}
+
+{% block content %}
+
+<a href="/admin/dr_excel?event_id={{ event_id }}" type="button" class="btn btn-danger btn-xs">导出</a>
+
+<br/>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>活动名称</th>
+            <th>捐赠档</th>
+            <th>捐赠者信息</th>
+            <th>捐赠金额(元)</th>
+            <th>捐赠日期</th>
+            <th>回报物</th>
+            <th>邮寄信息</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for dr in donation_records %}
+        {% set id = dr['id'] %}
+        {% set addr = dr['address'] %}
+        <tr class="{{ ['danger',''][dr['status']] }}">
+            <td>{{ id }}</td>
+            <td>{{ dr['event']['name'] }}</td>
+            <td>{{ dr['event_option']['price'] }}</td>
+            <td>{{ dr['user']['nickname'] }}</td>
+            <td>{{ dr['price'] }}</td>
+            <td>{{ dr['create_time'] }}</td>
+            <td>{{ dr['gift']['name'] if dr['gift'] else '-' }}</td>
+            {% if addr %}
+            <td>
+                {{ addr['name'] }} {{ addr['phone'] }} <br/>
+                {{ addr['country'] }} {{ addr['province'] }} {{ addr['city'] }} <br/>
+                {{ addr['street'] }}
+            </td>
+            {% else %}
+            <td>-</td>
+            {% end %}
+        </tr>
+        {% end %}
+        </tbody>
+    </table>
+</div>
+
+{% if donation_records and page_count > 1 %}
+{% module Template("widget/page.html",page=page,page_size=page_size,page_count=page_count) %}
+{% end %}
+
+{% end %}
+
+{% block require_js %}
+
+<script type="text/javascript">
+
+</script>
+{% end %}

@@ -49,10 +49,13 @@ class event_detail(BaseHandler):
         name = self.get_argument('name', '')
         cover = self.get_argument('cover', '')
         summary = self.get_argument('summary', '')
+        theme = self.get_argument('theme', '')
+        pay_cover = self.get_argument('pay_cover', '')
+        cart_cover = self.get_argument('cart_cover', '')
 
         if id:
-            ret, id = self.event.update(id, name, cover, summary)
+            ret, id = self.event.update(id, name, cover, summary, theme, pay_cover, cart_cover)
         else:
-            ret, id = self.event.add(name, cover, summary)
+            ret, id = self.event.add(name, cover, summary, theme, pay_cover, cart_cover)
 
         self.write_json(ret)

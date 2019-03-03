@@ -33,6 +33,13 @@
         </div>
     </div>
     <div class="form-group">
+        <label class="col-md-2 control-label">主题</label>
+        <div class="col-md-10">
+            <input type="text" placeholder="主题" class="form-control" id="theme"
+                   value="{{ event['theme'] if event else '' }}">
+        </div>
+    </div>
+    <div class="form-group">
         <input type="hidden" id="cover" value="">
         <label class="col-md-2 control-label">封面图</label>
         <div class="col-md-10">
@@ -41,7 +48,25 @@
             </div>
         </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" style="margin-top: 70px;">
+        <input type="hidden" id="pay_cover" value="">
+        <label class="col-md-2 control-label">支付完成顶部图片</label>
+        <div class="col-md-10">
+            <div class="row" style="height: 360px;padding-left: 15px;padding-right: 15px">
+                <input id="file-Portrait2" type="file">
+            </div>
+        </div>
+    </div>
+    <div class="form-group" style="margin-top: 70px;">
+        <input type="hidden" id="cart_cover" value="">
+        <label class="col-md-2 control-label">证书随机图画</label>
+        <div class="col-md-10">
+            <div class="row" style="height: 360px;padding-left: 15px;padding-right: 15px">
+                <input id="file-Portrait3" type="file" multiple>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" style="margin-top: 70px;">
         <label class="col-md-2 control-label">详情</label>
         <div class="col-md-10">
             <div class="summernote" name="summary" id="summary" placeholder="项目描述" action="/admin/upload">
@@ -64,23 +89,9 @@
 
 <script type="text/javascript">
     $(function () {
-        $('#cover').val("{{ event['cover'] if event else '' }}");
-
-        var covers = "{{ event['cover'] if event else '' }}".split(',')
-        var cover_list = []
-        var cover_configs = []
-        for (var i = 0; i < covers.length; i++) {
-            if (covers[i] != '') {
-                cover_list.push("<img src='http://" + location.host + '/static' + covers[i] + "' class='file-preview-image kv-preview-data' style='width:auto;height:auto;max-width:100%;max-height:100%;'>");
-                cover_configs.push({
-                    type: "image",
-                    downloadUrl: covers[i],
-                    key: 'init_' + i
-                },)
-            }
-
-        }
-        initFileInput("file-Portrait1", "/admin/upload", cover_list, cover_configs);
+        format_cover('cover', "{{ event['cover'] if event else '' }}", 1, 3);
+        format_cover('pay_cover', "{{ event['pay_cover'] if event else '' }}", 2, 1);
+        format_cover('cart_cover', "{{ event['cart_cover'] if event else '' }}", 3, 10);
 
 
         var $summernote = $('#summary').summernote({
@@ -140,8 +151,29 @@
         }
     })
 
+    function format_cover(id, val, cid, max_count) {
 
-    function initFileInput(ctrlName, uploadUrl, covers, cover_configs) {
+        $('#' + id).val(val);
+        var covers = val.split(',')
+
+        var cover_list = []
+        var cover_configs = []
+        for (var i = 0; i < covers.length; i++) {
+            if (covers[i] != '') {
+                cover_list.push("<img src='http://" + location.host + '/static' + covers[i] + "' class='file-preview-image kv-preview-data' style='width:auto;height:auto;max-width:100%;max-height:100%;'>");
+                cover_configs.push({
+                    type: "image",
+                    downloadUrl: covers[i],
+                    key: 'init_' + i
+                },)
+            }
+
+        }
+
+        initFileInput("file-Portrait" + cid, id, "/admin/upload", cover_list, cover_configs, max_count);
+    }
+
+    function initFileInput(ctrlName, hid_id, uploadUrl, covers, cover_configs, max_pic_count) {
         var List = new Array();
 
 
@@ -166,7 +198,8 @@
             browseClass: "btn btn-primary", //按钮样式
             previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
             maxFileSize: 500,
-            maxFileCount: 3, //表示允许同时上传的最大文件个数
+            maxFileCount: max_pic_count, //表示允许同时上传的最大文件个数
+            dropZoneTitle: '拖拽文件到这里 &hellip;<br>最多支持' + max_pic_count + '个文件',
             validateInitialCount: true,
             initialPreviewFileType: 'image',
             initialPreview: covers,
@@ -174,7 +207,7 @@
         }).on("fileuploaded", function (event, data, previewId, index) {
             var data = data.response.data;  //文件上传成功返回的文件名，可返回自定义文件名
             List.push({FileName: data, KeyID: previewId})
-            setCover(List)
+            setCover(List, hid_id)
 
         }).on("filesuccessremove", function (event, key) {
             for (var i = 0; i < List.length; i++) {
@@ -182,33 +215,32 @@
                     delete List[i];
                 }
             }
-            setCover(List)
+            setCover(List, hid_id)
         }).on("filepredelete", function (event, key) {
             for (var i = 0; i < List.length; i++) {
                 if (typeof List[i] != 'undefined' && List[i].KeyID == key) {
                     delete List[i];
                 }
             }
-            setCover(List)
+            setCover(List, hid_id)
         }).on("filecleared", function () {
             for (var i = 0; i < List.length; i++) {
                 if (typeof List[i] != 'undefined') {
                     delete List[i];
                 }
             }
-            setCover(List)
+            setCover(List, hid_id)
         });
     }
 
-    function setCover(Li) {
+    function setCover(Li, id) {
         var NLi = new Array();
         for (var i = 0; i < Li.length; i++) {
             if (typeof Li[i] != 'undefined') {
                 NLi.push(Li[i].FileName)
             }
         }
-        $('#cover').val(NLi.join(','));
-        console.log($("#cover").val());
+        $('#' + id).val(NLi.join(','));
     }
 
     var lock = false;
@@ -220,16 +252,34 @@
         var id = '{{ event["id"] if event else "" }}';
         var name = $('#name').val();
         var cover = $('#cover').val();
+        var pay_cover = $('#pay_cover').val();
+        var cart_cover = $('#cart_cover').val();
+        var theme = $('#theme').val();
         var summary = $('#summary').summernote('code');
-
 
         if (name.length == 0) {
             alert('请填写名称');
             return;
         }
 
+
+        if (theme == '') {
+            alert('请填写主题');
+            return;
+        }
+
         if (cover == '') {
             alert('请上传封面图');
+            return;
+        }
+
+        if (pay_cover == '') {
+            alert('请上传支付完成顶部图片');
+            return;
+        }
+
+        if (cart_cover == '') {
+            alert('请上传证书随机图画');
             return;
         }
 
@@ -242,7 +292,10 @@
             id: id,
             name: name,
             cover: cover,
+            pay_cover: pay_cover,
+            cart_cover: cart_cover,
             summary: summary,
+            theme: theme,
         }, function (data) {
             var obj = eval('(' + data + ')');
             if (obj.data == true) {

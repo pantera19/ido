@@ -22,5 +22,4 @@ class agreement_detail(BaseHandler):
         summary = self.get_argument('summary', '')
 
         ret = self.agreement.update(summary)
-        print(ret)
         self.write_json(ret)

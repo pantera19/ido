@@ -160,43 +160,5 @@ class wechat(object):
             msg = xmlresp['xml']['return_msg']
             return msg
 
-    def close_bill(self, out_trade_no):
-        nonce_str = self.generate_randomStr()
-
-        import collections
-        dic = collections.OrderedDict()
-        dic['appid'] = self.app_id
-        dic['mch_id'] = self.mch_id
-        dic['nonce_str'] = nonce_str
-        dic['out_trade_no'] = out_trade_no
-
-        xml = self.getxml(dic)
-
-        resp = requests.post("https://api.mch.weixin.qq.com/pay/closeorder", data=xml.encode('utf-8'),
-                             headers={'Content-Type': 'application/xml'})
-        msg = resp.text.encode('ISO-8859-1').decode('utf-8')
-        xmlresp = xmltodict.parse(msg)
-
-        return True
-
-    def check_wx_notify_url_data(self, str_xml):
-        '''校验微信回调 url 数据 是否安全'''
-        xmlresp = xmltodict.parse(str_xml)
-
-        if xmlresp['xml']['return_code'] == 'SUCCESS':
-            if xmlresp['xml']['result_code'] == 'SUCCESS':
-                if xmlresp['xml']['appid'] == self.app_id and xmlresp['xml']['mch_id'] == self.mch_id:
-                    return dict(code=1, order_id=xmlresp['xml']['out_trade_no'])
-                else:
-                    return dict(code=0, msg='FORBIDDEN')
-            else:
-                msg = xmlresp['xml']['err_code_des']
-                logging.error(msg)
-                return dict(code=0, msg=msg)
-        else:
-            msg = xmlresp['xml']['return_msg']
-            logging.error(msg)
-            return dict(code=0, msg=msg)
-
 
 wx = wechat(**config.minip)

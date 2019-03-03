@@ -29,6 +29,8 @@ wheels/
 config.py
 log/
 static/upload/
+static/certificate/
+
 
 MANIFEST
 

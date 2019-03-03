@@ -1,5 +1,6 @@
 # -*- coding:utf8 -*-
 
+import random
 from bass_access import BaseAccess
 from app.business.event_option import event_option_bll
 
@@ -28,7 +29,7 @@ class event_bll(BaseAccess):
 
     ''' admin '''
 
-    def add(self, name, cover, summary):
+    def add(self, name, cover, summary, theme='', pay_cover='', cart_cover=''):
         params = locals()
         params.pop('self')
 
@@ -36,7 +37,7 @@ class event_bll(BaseAccess):
 
         return flag, id
 
-    def update(self, id, name, cover, summary):
+    def update(self, id, name, cover, summary, theme='', pay_cover='', cart_cover=''):
         params = locals()
         params.pop('self')
         params.pop('id')
@@ -51,7 +52,24 @@ class event_bll(BaseAccess):
         return flag
 
     def get_detail(self, id):
-        return self._get(conditions=dict(id=id))
+        row = self._get(conditions=dict(id=id))
+        if row:
+            row['first_cover'] = row['cover'].split(',')[0]
+        return row
+
+    def rand_pic(self, id):
+        row = self._get(['cart_cover'], conditions=dict(id=id))
+
+        pic = ''
+        if row:
+            pics = row['cart_cover'].split(',')
+            if pics and pics[0] != '':
+                try:
+                    pic = pics[random.randint(0, len(pics) - 1)]
+                except:
+                    pic = pics[0]
+
+        return pic
 
     def get_list(self, page=1, page_size=20):
         start = (page - 1) * page_size

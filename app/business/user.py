@@ -29,6 +29,7 @@ class user_bll(BaseAccess):
     def get_detail_by_openid(self, open_id):
         return self._get(conditions=dict(open_id=open_id))
 
+
     ''' admin '''
 
     def update_status(self, id, status=0):
